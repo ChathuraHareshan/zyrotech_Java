@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details — ZyroTech</title>
+<link rel="icon" href="assets/img/logo.jpeg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          indigo: { DEFAULT: '#121F47', 50: '#EEF1F8' },
+          cyan: { DEFAULT: '#00BFB3', light: '#17D6C9', soft: '#E3FBF9' }
+        },
+        fontFamily: {
+          display: ['Space Grotesk', 'sans-serif'],
+          sans: ['Inter', 'sans-serif']
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header-content></header-content>
+
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-8">
+
+  <div class="flex items-center gap-2 text-sm text-gray-400 mb-6">
+    <a href="index.html" class="hover-text-red transition">Home</a>
+    <i class="fas fa-chevron-right text-xs"></i>
+    <span style="color:var(--indigo);">Product Details</span>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-10">
+
+    <div>
+      <img id="mainImage" src="https://picsum.photos/seed/product/700/700" alt="Product image" class="w-full aspect-square object-cover rounded-3xl card-shadow bg-indigo-50">
+      <div class="flex gap-3 mt-4 flex-wrap">
+        <img src="https://picsum.photos/seed/thumb1/200/200" class="thumbnail-img active" alt="Thumbnail 1">
+        <img src="https://picsum.photos/seed/thumb2/200/200" class="thumbnail-img" alt="Thumbnail 2">
+        <img src="https://picsum.photos/seed/thumb3/200/200" class="thumbnail-img" alt="Thumbnail 3">
+      </div>
+    </div>
+
+    <div>
+      <span class="text-sm text-red-primary font-semibold bg-red-soft px-3 py-1 rounded-full">Electronics</span>
+      <h1 class="text-2xl md:text-3xl font-display font-bold mt-4" style="color:var(--indigo);">Product Name</h1>
+
+      <div class="flex items-center gap-2 text-sm text-gray-500 mt-2">
+        <span class="flex items-center gap-1 text-amber-400"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-stroke"></i></span>
+        <span>SKU: ELEC-0000</span>
+      </div>
+
+      <p class="text-3xl font-bold text-red-primary mt-5">Rs.0.00</p>
+
+      <div class="mt-6">
+        <span class="zt-label">Color</span>
+        <div class="flex gap-2 mt-1"></div>
+      </div>
+
+      <div class="mt-5">
+        <span class="zt-label">Storage</span>
+        <div class="flex gap-2 mt-1 flex-wrap"></div>
+      </div>
+
+      <p class="text-xs text-gray-400 mt-3">(0 available)</p>
+
+      <p class="text-sm text-gray-600 leading-relaxed mt-5">Product description will appear here once loaded.</p>
+
+      <div class="flex items-center gap-4 mt-7">
+        <span class="zt-label !mb-0">Qty</span>
+        <div class="flex items-center gap-3">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <span id="qtyDisplay" class="qty-value w-6 text-center font-semibold text-lg">1</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 mt-7">
+        <button class="bg-red-primary text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 hover:opacity-90 transition">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="action-icon w-12 h-12 rounded-full text-lg">
+          <i class="far fa-heart"></i>
+        </button>
+      </div>
+
+      <div class="mt-8 grid grid-cols-2 gap-4 pt-6 border-t" style="border-color:var(--line);">
+        <div class="flex items-center gap-3 text-sm text-gray-500">
+          <i class="fas fa-truck-fast text-red-primary"></i> Islandwide delivery
+        </div>
+        <div class="flex items-center gap-3 text-sm text-gray-500">
+          <i class="fas fa-rotate-left text-red-primary"></i> 7-day returns
+        </div>
+        <div class="flex items-center gap-3 text-sm text-gray-500">
+          <i class="fas fa-shield-halved text-red-primary"></i> Official warranty
+        </div>
+        <div class="flex items-center gap-3 text-sm text-gray-500">
+          <i class="fas fa-lock text-red-primary"></i> Secure checkout
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer-content></footer-content>
+
+<script src="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.js"></script>
+<script src="assets/js/header.js"></script>
+<script src="assets/js/footer.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/singleProduct.js"></script>
+</body>
+</html>

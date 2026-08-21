@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZyroTech · Invoice</title>
+    <link rel="icon" href="assets/img/logo.jpeg" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        indigo: { DEFAULT: '#121F47', 50: '#EEF1F8' },
+                        cyan: { DEFAULT: '#00BFB3', light: '#17D6C9', soft: '#E3FBF9' }
+                    },
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ZyroTech invoice theme – subtle glass & bolt accents */
+        body {
+            background: #EEF1F8;
+            background-image: radial-gradient(circle at 10% 20%, rgba(0,191,179,0.08), transparent 45%),
+            radial-gradient(circle at 90% 70%, rgba(18,31,71,0.04), transparent 40%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            font-family: 'Inter', sans-serif;
+            color: #121F47;
+        }
+
+        .invoice-wrapper {
+            max-width: 880px;
+            width: 100%;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 36px;
+            padding: 2.2rem 2.5rem;
+            box-shadow: 0 20px 40px -8px rgba(18,31,71,0.10), 0 0 0 1px rgba(0,191,179,0.10);
+            transition: all 0.2s ease;
+        }
+
+        @media (max-width: 600px) {
+            .invoice-wrapper {
+                padding: 1.5rem 1.2rem;
+                border-radius: 28px;
+            }
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.7rem;
+            letter-spacing: -0.3px;
+            color: #121F47;
+        }
+        .logo span {
+            color: #00BFB3;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(18,31,71,0.06);
+            padding-bottom: 1.2rem;
+        }
+
+        .invoice-meta {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        .invoice-meta strong {
+            color: #121F47;
+            font-weight: 600;
+        }
+        .badge-paid {
+            display: inline-block;
+            background: rgba(0,191,179,0.12);
+            border: 1px solid rgba(0,191,179,0.25);
+            padding: 0.2rem 1.2rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #0a7a72;
+            letter-spacing: 0.3px;
+            margin-top: 4px;
+        }
+        .badge-paid i {
+            margin-right: 6px;
+            color: #00BFB3;
+        }
+
+        .address-block {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(18,31,71,0.05);
+            border-radius: 24px;
+            padding: 1.2rem 1.6rem;
+            margin: 1.2rem 0 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem 3rem;
+        }
+        .address-block .field {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .address-block .field span {
+            display: block;
+            color: #121F47;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+        .address-block .field i {
+            color: #00BFB3;
+            opacity: 0.7;
+            width: 18px;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0 1rem;
+            font-size: 0.9rem;
+        }
+        .invoice-table th {
+            text-align: left;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #64748b;
+            font-weight: 600;
+            padding: 0.6rem 0.4rem 0.6rem 0;
+            border-bottom: 1px solid rgba(18,31,71,0.06);
+        }
+        .invoice-table td {
+            padding: 0.8rem 0.4rem 0.8rem 0;
+            border-bottom: 1px solid rgba(18,31,71,0.04);
+            color: #1e293b;
+        }
+        .invoice-table tr:last-child td {
+            border-bottom: none;
+        }
+        .invoice-table .text-right {
+            text-align: right;
+        }
+        .invoice-table .amount {
+            color: #00BFB3;
+            font-weight: 600;
+        }
+        .invoice-table .text-center {
+            text-align: center;
+        }
+
+        .totals {
+            margin-top: 1.8rem;
+            margin-left: auto;
+            max-width: 260px;
+            width: 100%;
+            border-top: 1px solid rgba(18,31,71,0.06);
+            padding-top: 1.2rem;
+        }
+        .totals .row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            padding: 0.3rem 0;
+            color: #475569;
+        }
+        .totals .row.grand {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #121F47;
+            border-top: 1px solid rgba(18,31,71,0.08);
+            margin-top: 0.2rem;
+            padding-top: 0.8rem;
+        }
+        .totals .row.grand .amount {
+            color: #00BFB3;
+            font-size: 1.3rem;
+        }
+
+        .footer-note {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            border-top: 1px solid rgba(18,31,71,0.05);
+            padding-top: 1.2rem;
+        }
+        .footer-note i {
+            color: #00BFB3;
+            opacity: 0.7;
+            margin-right: 4px;
+        }
+
+        .btn-print {
+            background: transparent;
+            border: 1px solid rgba(18,31,71,0.12);
+            color: #475569;
+            padding: 0.4rem 1.4rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-print:hover {
+            border-color: #00BFB3;
+            color: #00BFB3;
+            background: rgba(0,191,179,0.04);
+        }
+
+        .text-muted {
+            color: #64748b;
+        }
+        .text-end {
+            text-align: right;
+        }
+
+        .shimmer-row td {
+            height: 38px;
+            background: rgba(18,31,71,0.03);
+            border-radius: 4px;
+            animation: shimmer 1.2s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.3; }
+        }
+
+        /* print styles – keep the theme */
+        @media print {
+            body {
+                background: #f8fafc !important;
+                padding: 0.2in;
+            }
+            .invoice-wrapper {
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+                backdrop-filter: none !important;
+                background: white !important;
+            }
+            .btn-print {
+                display: none !important;
+            }
+            .badge-paid {
+                background: rgba(0,191,179,0.08) !important;
+            }
+            .footer-note {
+                border-top-color: #e2e8f0 !important;
+            }
+            .address-block {
+                background: #f1f5f9 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="invoice-wrapper" id="invoiceApp">
+
+    <!-- header -->
+    <div class="invoice-header">
+        <div>
+            <div class="logo">Zyro<span>Tech</span></div>
+            <div class="text-muted" style="font-size:0.8rem; margin-top:6px;">
+                <i class="fas fa-bolt" style="color:#00BFB3; margin-right:4px;"></i> power in every device
+            </div>
+        </div>
+        <div class="invoice-meta">
+            <div><strong>Invoice #</strong> <span id="invNo">—</span></div>
+            <div><strong>Date</strong> <span id="invDate">—</span></div>
+            <div class="badge-paid"><i class="fas fa-check-circle"></i><span id="invStatus">—</span></div>
+        </div>
+    </div>
+
+    <!-- address & buyer -->
+    <div class="address-block" id="addressBlock">
+        <div class="field">
+            <i class="fas fa-user"></i> Buyer
+            <span id="buyerName">—</span>
+        </div>
+        <div class="field">
+            <i class="fas fa-envelope"></i> Email
+            <span id="buyerEmail">—</span>
+        </div>
+        <div class="field">
+            <i class="fas fa-location-dot"></i> Delivery
+            <span id="deliveryAddress">—</span>
+        </div>
+    </div>
+
+    <!-- items table -->
+    <table class="invoice-table">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Item</th>
+            <th class="text-center">Qty</th>
+            <th class="text-right">Price</th>
+            <th class="text-right">Total</th>
+        </tr>
+        </thead>
+        <tbody id="itemBody">
+        <tr class="shimmer-row">
+            <td colspan="5" style="text-align:center; color:#94a3b8; padding:1.2rem 0;">Loading invoice data…</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- totals -->
+    <div class="totals">
+        <div class="row"><span>Subtotal</span> <span class="amount" id="subtotal">0.00</span></div>
+        <div class="row"><span>Shipping</span> <span class="amount" id="shipping">500.00</span></div>
+        <div class="row grand"><span>Total</span> <span class="amount" id="grandTotal">0.00</span></div>
+    </div>
+
+    <!-- footer -->
+    <div class="footer-note">
+        <span><i class="fas fa-shield-halved"></i> Payment confirmed · thank you for your order</span>
+        <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+    </div>
+</div>
+
+<!-- Notiflix -->
+<script src="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.js"></script>
+<script>
+    (function() {
+        // helpers
+        const fmt = (num) =>
+            new Intl.NumberFormat('en-US', { minimumFractionDigits: 2 }).format(num);
+        const $ = (id) => document.getElementById(id);
+
+        // get orderId from URL
+        const params = new URLSearchParams(window.location.search);
+        const orderId = params.get('orderId');
+
+        const invNo = $('invNo');
+        const invDate = $('invDate');
+        const invStatus = $('invStatus');
+        const buyerName = $('buyerName');
+        const buyerEmail = $('buyerEmail');
+        const deliveryAddress = $('deliveryAddress');
+        const itemBody = $('itemBody');
+        const subtotalEl = $('subtotal');
+        const shippingEl = $('shipping');
+        const grandTotalEl = $('grandTotal');
+
+        if (!orderId) {
+            Notiflix.Notify.warning('Missing orderId parameter.', { position: 'center-top' });
+            itemBody.innerHTML =
+                `<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:1.5rem 0;">No order ID provided.</td></tr>`;
+            return;
+        }
+
+        async function loadInvoice(orderId) {
+            try {
+                Notiflix.Loading.pulse('Loading invoice…', {
+                    clickToClose: false,
+                    svgColor: '#00BFB3'
+                });
+
+                const response = await fetch(`api/invoices/user-invoice?orderId=${orderId}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status} — ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (!data.status) {
+                    throw new Error(data.message || 'Invoice data unavailable.');
+                }
+
+                const inv = data.invoiceData;
+
+                invNo.textContent = inv.invoiceNo || '—';
+                invDate.textContent = inv.invoiceDate || '—';
+                invStatus.textContent = inv.invoiceStatus || '—';
+
+                buyerName.textContent = inv.buyerName || '—';
+                buyerEmail.textContent = inv.email || '—';
+                const fullAddr = [inv.address, inv.cityName].filter(Boolean).join(', ');
+                deliveryAddress.textContent = fullAddr || '—';
+
+                const items = inv.invoiceItemDTOList || [];
+                let subtotal = 0;
+
+                if (items.length === 0) {
+                    itemBody.innerHTML =
+                        `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:1.2rem 0;">No items in this invoice.</td></tr>`;
+                } else {
+                    let rows = '';
+                    items.forEach((item, idx) => {
+                        const qty = item.itemQty || 1;
+                        const price = item.itemPrice || 0;
+                        const total = qty * price;
+                        subtotal += total;
+                        rows += `
+              <tr>
+                <td>${idx + 1}</td>
+                <td>${item.itemName || 'Unnamed'}</td>
+                <td class="text-center">${qty}</td>
+                <td class="text-right">Rs. ${fmt(price)}</td>
+                <td class="text-right amount">Rs. ${fmt(total)}</td>
+              </tr>
+            `;
+                    });
+                    itemBody.innerHTML = rows;
+                }
+
+                const shipping = 500.00;
+                const grand = subtotal + shipping;
+                subtotalEl.textContent = `Rs. ${fmt(subtotal)}`;
+                shippingEl.textContent = `Rs. ${fmt(shipping)}`;
+                grandTotalEl.textContent = `Rs. ${fmt(grand)}`;
+
+                document.title = `ZyroTech · Invoice ${inv.invoiceNo || ''}`;
+
+                Notiflix.Notify.success('Invoice loaded successfully.', { position: 'center-top' });
+
+            } catch (err) {
+                console.error('Invoice load error:', err);
+                Notiflix.Notify.failure(err.message || 'Failed to load invoice.', { position: 'center-top' });
+                itemBody.innerHTML =
+                    `<tr><td colspan="5" style="text-align:center; color:#fb7185; padding:1.2rem 0;">⚠️ ${err.message}</td></tr>`;
+            } finally {
+                Notiflix.Loading.remove();
+            }
+        }
+
+        loadInvoice(orderId);
+    })();
+</script>
+</body>
+</html>

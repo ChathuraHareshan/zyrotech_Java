@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — ZyroTech</title>
+<link rel="icon" href="assets/img/logo.jpeg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          indigo: { DEFAULT: '#121F47', 50: '#EEF1F8' },
+          cyan: { DEFAULT: '#00BFB3', light: '#17D6C9', soft: '#E3FBF9' }
+        },
+        fontFamily: {
+          display: ['Space Grotesk', 'sans-serif'],
+          sans: ['Inter', 'sans-serif']
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="pb-24 lg:pb-0">
+
+<header-content></header-content>
+
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-10">
+
+  <h1 class="font-display font-bold text-2xl md:text-3xl mb-8" style="color:var(--indigo);">Checkout</h1>
+
+  <div class="grid lg:grid-cols-3 gap-8">
+
+    <div class="lg:col-span-2 space-y-6">
+
+      <div class="bg-white rounded-2xl card-shadow border p-6" style="border-color:var(--line);">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-display font-semibold text-lg" style="color:var(--indigo);">Shipping Address</h2>
+          <label class="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
+            <input type="checkbox" id="useCurrentAddress" class="w-4 h-4 accent-cyan">
+            Use my saved address
+          </label>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="zt-label">First Name</label>
+            <input type="text" id="firstName" class="zt-input address-field" placeholder="John">
+          </div>
+          <div>
+            <label class="zt-label">Last Name</label>
+            <input type="text" id="lastName" class="zt-input address-field" placeholder="Doe">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="zt-label">Address Line 1</label>
+            <input type="text" id="lineOne" class="zt-input address-field" placeholder="Street address">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="zt-label">Address Line 2</label>
+            <input type="text" id="lineTwo" class="zt-input address-field" placeholder="Apartment, suite, etc. (optional)">
+          </div>
+          <div>
+            <label class="zt-label">City</label>
+            <select id="city" class="zt-input address-field">
+              <option value="0">Select a City</option>
+            </select>
+          </div>
+          <div>
+            <label class="zt-label">Postal Code</label>
+            <input type="text" id="postalCode" class="zt-input address-field" placeholder="10230">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="zt-label">Mobile Number</label>
+            <input type="tel" id="mobile" class="zt-input address-field" placeholder="07X XXX XXXX">
+          </div>
+        </div>
+
+        <div id="saveAddressWrapper" class="flex items-center gap-2 mt-4 text-sm text-gray-500">
+          <input type="checkbox" id="saveAddress" class="w-4 h-4 accent-cyan">
+          <label for="saveAddress">Save this address for next time</label>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl card-shadow border p-6" style="border-color:var(--line);">
+        <h2 class="font-display font-semibold text-lg mb-4" style="color:var(--indigo);">Payment Method</h2>
+        <div class="flex items-center gap-3 p-4 rounded-xl border" style="border-color:var(--cyan); background:var(--cyan-soft);">
+          <i class="fas fa-credit-card text-red-primary text-lg"></i>
+          <div>
+            <p class="font-semibold text-sm" style="color:var(--indigo);">Card / PayHere Secure Payment</p>
+            <p class="text-xs text-gray-500">You'll be redirected to a secure payment window.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl card-shadow border p-6 h-fit sticky top-6" style="border-color:var(--line);">
+      <h2 class="font-display font-semibold text-lg mb-4" style="color:var(--indigo);">
+        Order Summary <span class="text-sm font-normal text-gray-400">(<span id="cartCount">0</span> items)</span>
+      </h2>
+
+      <div id="orderItems" class="max-h-72 overflow-y-auto mb-4"></div>
+
+      <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
+        <span>Items (<span id="totalItems">0</span>)</span>
+        <span>Rs.<span id="orderSubtotal">0.00</span></span>
+      </div>
+      <div class="flex items-center justify-between text-sm text-gray-500 mb-4 pb-4 border-b" style="border-color:var(--line);">
+        <span>Shipping</span>
+        <span>Rs.<span id="orderShipping">500.00</span></span>
+      </div>
+      <div class="flex items-center justify-between font-display font-bold text-lg mb-6" style="color:var(--indigo);">
+        <span>Total</span>
+        <span>Rs.<span id="orderTotal">0.00</span></span>
+      </div>
+
+      <button onclick="processCheckout()" class="btn-primary w-full"><i class="fas fa-lock"></i> Pay Rs.<span id="buyNowTotal">0.00</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 flex items-center justify-between gap-4 lg:hidden" style="border-color:var(--line);">
+  <div>
+    <p class="text-xs text-gray-400">Total</p>
+    <p class="font-display font-bold" style="color:var(--indigo);">Rs.<span id="orderTotalMobile">0.00</span></p>
+  </div>
+  <button onclick="processCheckout()" class="btn-primary flex-1"><i class="fas fa-lock"></i> Pay Now</button>
+</div>
+
+<footer-content></footer-content>
+
+<script src="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.js"></script>
+<script src="https://www.payhere.lk/lib/payhere.js"></script>
+<script src="assets/js/header.js"></script>
+<script src="assets/js/footer.js"></script>
+<script src="assets/js/checkout.js"></script>
+</body>
+</html>

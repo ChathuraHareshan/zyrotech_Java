@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — ZyroTech</title>
+<link rel="icon" href="assets/img/logo.jpeg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          indigo: { DEFAULT: '#121F47', 50: '#EEF1F8' },
+          cyan: { DEFAULT: '#00BFB3', light: '#17D6C9', soft: '#E3FBF9' }
+        },
+        fontFamily: {
+          display: ['Space Grotesk', 'sans-serif'],
+          sans: ['Inter', 'sans-serif']
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="min-h-screen">
+
+<div class="min-h-screen grid lg:grid-cols-2">
+
+  <div class="hero-bolt-bg relative hidden lg:flex flex-col justify-between p-12 text-white overflow-hidden">
+    <div class="flex items-center gap-2 relative z-10">
+      <img src="assets/img/logo.jpeg" alt="ZyroTech" class="h-10 w-10 rounded-lg object-cover">
+      <span class="font-display font-bold text-xl">Zyro<span style="color:var(--cyan);">Tech</span></span>
+    </div>
+    <div class="relative z-10 max-w-sm">
+      <span class="bolt-divider text-cyan-light text-xs font-semibold tracking-wide uppercase">Admin Console</span>
+      <h2 class="font-display font-bold text-3xl leading-tight mt-4">Restricted access.<br>Verified by design.</h2>
+      <p class="mt-4 text-sm" style="color:#B7C2DE;">Sign in with your admin email, then confirm with the one-time code sent to your inbox.</p>
+    </div>
+    <p class="relative z-10 text-xs" style="color:#7A87AC;">&copy; 2026 ZyroTech</p>
+    <div class="absolute -bottom-16 -right-16 w-72 h-72 rounded-full" style="background: radial-gradient(circle, rgba(0,191,179,0.25), transparent 70%);"></div>
+  </div>
+
+  <div class="flex items-center justify-center p-6 sm:p-12">
+    <div class="w-full max-w-sm">
+      <div class="flex lg:hidden items-center gap-2 mb-10 justify-center">
+        <img src="assets/img/logo.jpeg" alt="ZyroTech" class="h-9 w-9 rounded-lg object-cover">
+        <span class="font-display font-bold text-lg" style="color:var(--indigo);">Zyro<span style="color:var(--cyan);">Tech</span></span>
+      </div>
+
+      <span class="text-xs font-semibold tracking-wide uppercase text-red-primary">Secure Access</span>
+      <h1 class="font-display font-bold text-2xl mt-2" style="color:var(--indigo);">Admin Portal</h1>
+      <p class="text-sm text-gray-400 mt-1">Enter your admin email to receive a one-time code.</p>
+
+      <form class="mt-8 space-y-5" onsubmit="event.preventDefault();">
+        <div>
+          <label class="zt-label">Email Address</label>
+          <div class="flex items-center gap-2">
+            <input type="email" id="email" required class="zt-input" placeholder="admin@zyrotech.com">
+            <button type="button" onclick="sendOTP();" class="btn-outline !px-4 !py-3 whitespace-nowrap text-sm">Send OTP</button>
+          </div>
+        </div>
+        <div>
+          <label class="zt-label">One-Time Password</label>
+          <input type="text" id="otp" inputmode="numeric" autocomplete="off" class="zt-input text-center tracking-[0.3em] font-display font-semibold text-lg" placeholder="000000">
+          <p class="text-xs text-gray-400 mt-2"><i class="fas fa-bolt text-red-primary"></i> Enter the 6-digit code sent to your email</p>
+        </div>
+        <button type="button" onclick="verifyOTP();" class="btn-primary w-full"><i class="fas fa-shield-halved"></i> Log In to Admin Console</button>
+      </form>
+
+      <p class="text-xs text-gray-400 text-center mt-8">Restricted area · ZyroTech staff only</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.js"></script>
+<script src="assets/js/adminLogin.js"></script>
+</body>
+</html>

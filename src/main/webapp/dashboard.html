@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZyroTech · Admin Dashboard</title>
+  <link rel="icon" href="assets/img/logo.jpeg" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            indigo: { DEFAULT: '#121F47', 50: '#EEF1F8' },
+            cyan: { DEFAULT: '#00BFB3', light: '#17D6C9', soft: '#E3FBF9' }
+          },
+          fontFamily: {
+            display: ['Space Grotesk', 'sans-serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .admin-shell {
+      display: flex;
+      min-height: 100vh;
+      background: #f1f4fa;
+    }
+    .admin-sidebar {
+      width: 260px;
+      background: #121F47;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      flex-shrink: 0;
+      transition: 0.3s;
+      z-index: 30;
+    }
+    .admin-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .admin-nav-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.3);
+      margin: 0.75rem 0 0.25rem;
+    }
+    .admin-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 10px;
+      color: rgba(255,255,255,0.6);
+      transition: 0.2s;
+      cursor: pointer;
+      font-size: 0.9rem;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+    .admin-nav-item:hover {
+      background: rgba(255,255,255,0.06);
+      color: white;
+    }
+    .admin-nav-item.active {
+      background: rgba(0,191,179,0.15);
+      color: #00BFB3;
+    }
+    .admin-nav-item i {
+      width: 20px;
+    }
+    .admin-sidebar-footer {
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 1rem;
+    }
+    .admin-main {
+      flex: 1;
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+    }
+    .admin-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .admin-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+      border: 1px solid rgba(18,31,71,0.06);
+    }
+    .admin-section {
+      display: none;
+    }
+    .admin-section.active {
+      display: block;
+    }
+    .admin-table-wrap {
+      overflow-x: auto;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .admin-table th {
+      text-align: left;
+      padding: 0.7rem 0.5rem;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #e9edf4;
+    }
+    .admin-table td {
+      padding: 0.7rem 0.5rem;
+      border-bottom: 1px solid #eef2f8;
+      color: #1e293b;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-search {
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      font-size: 0.8rem;
+      min-width: 180px;
+    }
+    .admin-status {
+      padding: 0.15rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .admin-status.shipped { background: #dbeafe; color: #1d4ed8; }
+    .admin-status.pending { background: #fef3c7; color: #b45309; }
+    .admin-status.delivered { background: #d1fae5; color: #065f46; }
+    .admin-status.active { background: #d1fae5; color: #065f46; }
+    .admin-status.inactive { background: #fee2e2; color: #991b1b; }
+
+    .action-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      color: #121F47;
+      border: none;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .action-icon:hover { background: #e2e8f0; }
+    .btn-primary {
+      background: #00BFB3;
+      color: white;
+      padding: 0.5rem 1.4rem;
+      border-radius: 30px;
+      border: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: 0.15s;
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: #0aaca0; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #d0d7e6;
+      padding: 0.5rem 1.4rem;
+      border-radius: 30px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: 0.15s;
+      cursor: pointer;
+    }
+    .btn-outline:hover { border-color: #00BFB3; color: #00BFB3; }
+    .admin-form-group { margin-bottom: 1rem; }
+    .zt-label { font-size: 0.8rem; font-weight: 500; color: #1e293b; display: block; margin-bottom: 0.2rem; }
+    .zt-input {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      border: 1px solid #dde3ed;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      background: white;
+      transition: 0.15s;
+    }
+    .zt-input:focus { border-color: #00BFB3; outline: none; box-shadow: 0 0 0 3px rgba(0,191,179,0.1); }
+    .image-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 1rem;
+    }
+    .image-upload-box {
+      border: 2px dashed #dde3ed;
+      border-radius: 16px;
+      padding: 1.2rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.15s;
+      position: relative;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .image-upload-box:hover { border-color: #00BFB3; }
+    .image-upload-box i { font-size: 1.8rem; color: #94a3b8; }
+    .image-upload-box p { font-size: 0.8rem; color: #475569; margin: 0.2rem 0; }
+    .image-upload-box span { font-size: 0.6rem; color: #94a3b8; }
+    .preview-container { margin-top: 6px; }
+    .preview-container img { max-width: 100%; max-height: 70px; border-radius: 8px; object-fit: cover; }
+    .btn-sm { padding: 0.25rem 0.9rem; font-size: 0.75rem; }
+
+    @media (max-width: 768px) {
+      .admin-sidebar { position: fixed; left: -280px; top: 0; bottom: 0; transition: 0.3s; }
+      .admin-sidebar.open { left: 0; }
+      .admin-main { padding: 1rem; }
+      .image-upload-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <!-- ========= SIDEBAR ========= -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-logo">
+      <img src="assets/img/logo.jpeg" alt="ZyroTech" class="h-9 w-9 rounded-lg object-cover" />
+      <span class="font-display font-bold text-white text-lg">Zyro<span style="color:#00BFB3;">Tech</span></span>
+    </div>
+
+    <nav class="admin-nav">
+      <div class="admin-nav-label">Dashboard</div>
+      <div class="admin-nav-item active" data-tab="panel-overview"><i class="fas fa-chart-pie"></i> Overview</div>
+
+      <div class="admin-nav-label">Catalog</div>
+      <div class="admin-nav-item" data-tab="panel-products"><i class="fas fa-box"></i> View Products</div>
+      <div class="admin-nav-item" data-tab="panel-add"><i class="fas fa-circle-plus"></i> Add Product</div>
+
+      <div class="admin-nav-label">Store</div>
+      <div class="admin-nav-item" data-tab="panel-orders"><i class="fas fa-shopping-cart"></i> Order Manage</div>
+      <div class="admin-nav-item" data-tab="panel-customers"><i class="fas fa-users"></i> User Manage</div>
+    </nav>
+
+    <div class="admin-sidebar-footer">
+      <a href="adminLogin.html" class="admin-nav-item !mx-0 !text-red-200 hover:!text-white">
+        <i class="fas fa-arrow-right-from-bracket"></i> Logout
+      </a>
+    </div>
+  </aside>
+
+  <!-- ========= MAIN ========= -->
+  <div class="admin-main">
+
+    <header class="admin-topbar">
+      <div>
+        <h1 class="font-display font-bold text-lg" style="color:#121F47;" id="pageTitle">Overview</h1>
+        <p class="text-xs text-gray-400">Manage your ZyroTech storefront</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="action-icon"><i class="far fa-bell"></i></button>
+        <div class="flex items-center gap-2">
+          <div class="action-icon !bg-indigo-50 text-cyan"><i class="fas fa-user-shield"></i></div>
+          <span class="text-sm font-semibold hidden sm:block" style="color:#121F47;">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== OVERVIEW ===================== -->
+    <section id="panel-overview" class="admin-section active">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="stat-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+          <p class="text-gray-400 text-xs font-medium">Total Revenue</p>
+          <p class="font-display font-bold text-xl text-indigo">Rs.284.5K</p>
+        </div>
+        <div class="stat-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+          <p class="text-gray-400 text-xs font-medium">Total Orders</p>
+          <p class="font-display font-bold text-xl text-indigo">2,413</p>
+        </div>
+        <div class="stat-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+          <p class="text-gray-400 text-xs font-medium">Customers</p>
+          <p class="font-display font-bold text-xl text-indigo">1,289</p>
+        </div>
+        <div class="stat-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+          <p class="text-gray-400 text-xs font-medium">Products</p>
+          <p class="font-display font-bold text-xl text-indigo" id="productCount">0</p>
+        </div>
+      </div>
+      <div class="admin-card">
+        <h3 class="font-display font-semibold text-indigo">Welcome back</h3>
+        <p class="text-sm text-gray-400 mb-4">Jump straight into managing your catalog or checking today's orders.</p>
+        <div class="flex flex-wrap gap-3">
+          <button class="admin-nav-item !text-indigo !bg-indigo-50 !mx-0 cursor-pointer" data-tab="panel-add"><i class="fas fa-circle-plus"></i> Add a product</button>
+          <button class="admin-nav-item !text-indigo !bg-indigo-50 !mx-0 cursor-pointer" data-tab="panel-orders"><i class="fas fa-shopping-cart"></i> Review orders</button>
+          <button class="admin-nav-item !text-indigo !bg-indigo-50 !mx-0 cursor-pointer" data-tab="panel-products"><i class="fas fa-box"></i> View catalog</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PRODUCTS (VIEW) ===================== -->
+    <section id="panel-products" class="admin-section">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 class="font-display font-semibold text-lg text-indigo">Products</h2>
+        <div class="flex gap-2 flex-wrap">
+          <input type="text" id="productSearch" class="admin-search" placeholder="Search products..." />
+          <button class="btn-primary btn-sm" onclick="LoadProducts()"><i class="fas fa-sync"></i> Refresh</button>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+            <tr>
+              <th>ID</th><th>Title</th><th>Storage</th><th>Color</th><th>Qty</th>
+              <th>Price</th><th>Category</th><th>Status</th><th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="productTableBody">
+            <tr><td colspan="9" style="text-align:center; padding:2rem; color:#94a3b8;">Loading products...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ADD PRODUCT ===================== -->
+    <section id="panel-add" class="admin-section">
+      <h2 class="font-display font-semibold text-lg mb-4 text-indigo">Add New Product</h2>
+      <div class="admin-card">
+        <form id="productForm" onsubmit="event.preventDefault();">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <div class="admin-form-group">
+                <label class="zt-label">Product Title</label>
+                <input type="text" id="title" class="zt-input" placeholder="e.g., Nova Buds Pro" required />
+              </div>
+              <div class="admin-form-group">
+                <label class="zt-label">Description</label>
+                <textarea id="description" rows="4" class="zt-input" placeholder="Full description..." required></textarea>
+              </div>
+              <div class="admin-form-group">
+                <label class="zt-label">Category</label>
+                <select id="category" class="zt-input" required><option value="0">Select a Category</option></select>
+              </div>
+              <div class="admin-form-group">
+                <label class="zt-label">Quantity</label>
+                <input type="number" id="qty" min="1" class="zt-input" placeholder="0" required />
+              </div>
+            </div>
+            <div>
+              <div class="admin-form-group">
+                <label class="zt-label">Color</label>
+                <select id="color" class="zt-input" required><option value="0">Select a Color</option></select>
+              </div>
+              <div class="admin-form-group">
+                <label class="zt-label">Storage</label>
+                <select id="storage" class="zt-input" required><option value="0">Select a Storage</option></select>
+              </div>
+              <div class="admin-form-group">
+                <label class="zt-label">Price (Rs.)</label>
+                <input type="number" step="0.01" id="price" class="zt-input" placeholder="e.g., 3500" required />
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-form-group mt-2">
+            <label class="zt-label">Product Images <span class="text-gray-400 font-normal">(up to 3, first is main)</span></label>
+            <div class="image-upload-grid">
+              <div>
+                <div class="image-upload-box" onclick="document.getElementById('img1').click()">
+                  <i class="fas fa-cloud-arrow-up"></i>
+                  <p>Main Image</p>
+                  <span>JPG, PNG, WEBP</span>
+                  <div class="preview-container"><img class="image-preview" style="display:none;" /></div>
+                </div>
+                <input type="file" id="img1" class="hidden" accept="image/*" />
+              </div>
+              <div>
+                <div class="image-upload-box" onclick="document.getElementById('img2').click()">
+                  <i class="fas fa-cloud-arrow-up"></i>
+                  <p>Image 2</p>
+                  <span>JPG, PNG, WEBP</span>
+                  <div class="preview-container"><img class="image-preview" style="display:none;" /></div>
+                </div>
+                <input type="file" id="img2" class="hidden" accept="image/*" />
+              </div>
+              <div>
+                <div class="image-upload-box" onclick="document.getElementById('img3').click()">
+                  <i class="fas fa-cloud-arrow-up"></i>
+                  <p>Image 3</p>
+                  <span>JPG, PNG, WEBP</span>
+                  <div class="preview-container"><img class="image-preview" style="display:none;" /></div>
+                </div>
+                <input type="file" id="img3" class="hidden" accept="image/*" />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-200">
+            <button type="button" class="btn-outline" onclick="resetAddProductForm()">Reset</button>
+            <button type="button" class="btn-primary" onclick="addProduct()"><i class="fas fa-floppy-disk"></i> Save Product</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===================== ORDERS ===================== -->
+    <section id="panel-orders" class="admin-section">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 class="font-display font-semibold text-lg text-indigo">Orders</h2>
+        <div class="flex gap-2 flex-wrap">
+          <input type="text" id="orderSearch" class="admin-search" placeholder="Search by customer..." />
+          <button class="btn-primary btn-sm" onclick="LoadOrders()"><i class="fas fa-sync"></i> Refresh</button>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+            <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="orderTableBody">
+            <tr><td colspan="7" style="text-align:center; padding:2rem; color:#94a3b8;">Loading orders...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CUSTOMERS ===================== -->
+    <section id="panel-customers" class="admin-section">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 class="font-display font-semibold text-lg text-indigo">Customers</h2>
+        <input type="text" class="admin-search" placeholder="Find customer..." />
+      </div>
+      <div class="admin-card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th></th><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Spent</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+            <tr><td><div class="action-icon !bg-indigo-50 text-cyan"><i class="fas fa-user"></i></div></td><td>Alex Rivera</td><td>a.rivera@mail.com</td><td>+94 71 234 5678</td><td>12</td><td>Rs.428,000</td><td><span class="admin-status active">Active</span></td><td><button class="btn-icon"><i class="fas fa-eye"></i></button></td></tr>
+            <tr><td><div class="action-icon !bg-indigo-50 text-cyan"><i class="fas fa-user"></i></div></td><td>Blair Yu</td><td>blair.y@mail.com</td><td>+94 77 987 6543</td><td>8</td><td>Rs.293,000</td><td><span class="admin-status active">Active</span></td><td><button class="btn-icon"><i class="fas fa-eye"></i></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-gray-400 mt-3">Demo data — connect users API for live data.</p>
+      </div>
+    </section>
+
+  </div><!-- /admin-main -->
+</div><!-- /admin-shell -->
+
+
+<!-- ===================== EDIT PRODUCT MODAL ===================== -->
+<div id="editModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1.5rem;">
+  <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="font-display font-semibold text-indigo text-xl">Edit Product</h2>
+      <button onclick="closeEditModal()" class="text-gray-400 text-2xl">&times;</button>
+    </div>
+    <input type="hidden" id="editProductId" />
+    <div class="space-y-3">
+      <div><label class="zt-label">Title</label><input type="text" id="editTitle" class="zt-input" /></div>
+      <div><label class="zt-label">Description</label><textarea id="editDescription" rows="2" class="zt-input"></textarea></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="zt-label">Category</label><select id="editCategory" class="zt-input"></select></div>
+        <div><label class="zt-label">Qty</label><input type="number" id="editQty" class="zt-input" min="0" /></div>
+        <div><label class="zt-label">Color</label><select id="editColor" class="zt-input"></select></div>
+        <div><label class="zt-label">Storage</label><select id="editStorage" class="zt-input"></select></div>
+      </div>
+      <div><label class="zt-label">Price (Rs.)</label><input type="number" id="editPrice" class="zt-input" step="0.01" /></div>
+      <div><label class="zt-label">Status</label>
+        <select id="editStatus" class="zt-input">
+          <option value="ACTIVE">Active</option>
+          <option value="INACTIVE">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-5">
+      <button class="btn-primary flex-1" onclick="saveEditProduct()"><i class="fas fa-save"></i> Update</button>
+      <button class="btn-outline" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ORDER DETAIL MODAL ===================== -->
+<div id="orderModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1.5rem;">
+  <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="font-display font-semibold text-indigo text-xl">Order Details</h2>
+      <button onclick="closeOrderModal()" class="text-gray-400 text-2xl">&times;</button>
+    </div>
+    <div id="orderModalBody"></div>
+    <div class="flex gap-3 mt-4">
+      <select id="orderStatusSelect" class="zt-input flex-1">
+        <option value="PENDING">Pending</option><option value="APPROVED">Approved</option>
+        <option value="PACKING">Packing</option><option value="DELIVERED">Delivered</option>
+        <option value="COMPLETED">Completed</option><option value="REJECTED">Rejected</option><option value="CANCELED">Canceled</option>
+      </select>
+      <button class="btn-primary" onclick="applyOrderStatus()">Update</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.js"></script>
+<script>
+  // ============================================================
+  //  GLOBALS
+  // ============================================================
+  let allProducts = [];
+  let currentFilter = 'all';
+  let colorOptions = [], storageOptions = [], categoryOptions = [];
+  let allOrders = [];
+  let currentOrderFilter = 'all';
+  let editingOrderId = null;
+
+  // ============================================================
+  //  LOAD COLOR/STORAGE/CATEGORY OPTIONS
+  // ============================================================
+  async function loadColorStorage() {
+    try {
+      const resp = await fetch('api/content/colorStorage');
+      if (!resp.ok) throw new Error('Failed to load options');
+      const data = await resp.json();
+      colorOptions = data.colors || [];
+      storageOptions = data.storage || [];
+      categoryOptions = data.category || [];
+      populateSelect('color', colorOptions, 'id', 'value', 'Select a Color');
+      populateSelect('storage', storageOptions, 'id', 'value', 'Select a Storage');
+      populateSelect('category', categoryOptions, 'id', 'name', 'Select a Category');
+      populateSelect('editColor', colorOptions, 'id', 'value', 'Select a Color');
+      populateSelect('editStorage', storageOptions, 'id', 'value', 'Select a Storage');
+      populateSelect('editCategory', categoryOptions, 'id', 'name', 'Select a Category');
+    } catch (e) {
+      console.error(e);
+      Notiflix.Notify.failure(e.message);
+    }
+  }
+
+  function populateSelect(id, items, valKey, labelKey, placeholder) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = `<option value="0">${placeholder}</option>`;
+    items.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item[valKey];
+      opt.textContent = item[labelKey];
+      sel.appendChild(opt);
+    });
+  }
+
+  function setSelectValue(id, value) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    for (let opt of sel.options) {
+      if (parseInt(opt.value) === value) { sel.value = opt.value; return; }
+    }
+    sel.value = '0';
+  }
+
+  // ============================================================
+  //  PRODUCTS - FIXED STATUS TOGGLE
+  // ============================================================
+  async function LoadProducts() {
+    const body = document.getElementById('productTableBody');
+    body.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:2rem; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>`;
+    try {
+      const resp = await fetch('api/content/product');
+      if (!resp.ok) throw new Error('Failed to load products');
+      const data = await resp.json();
+      allProducts = data.newArrivals || [];
+      document.getElementById('productCount').textContent = allProducts.length;
+      renderProducts('all');
+    } catch (e) {
+      body.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#ef4444; padding:2rem;">${e.message}</td></tr>`;
+      Notiflix.Notify.failure(e.message);
+    }
+  }
+
+  function renderProducts(filter) {
+    const body = document.getElementById('productTableBody');
+    let filtered = allProducts;
+    const searchVal = document.getElementById('productSearch')?.value?.toLowerCase() || '';
+    if (searchVal) filtered = filtered.filter(p => p.title?.toLowerCase().includes(searchVal));
+    if (!filtered.length) {
+      body.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:2rem; color:#94a3b8;">No products found.</td></tr>`;
+      return;
+    }
+    let html = '';
+    filtered.forEach(p => {
+      // Get status from the product - default to ACTIVE if not set
+      const status = p.status || 'ACTIVE';
+      const isActive = status === 'ACTIVE' || status === 'active';
+      const statusClass = isActive ? 'active' : 'inactive';
+      const statusLabel = isActive ? 'Active' : 'Inactive';
+      const productId = p.productId || p.id;
+
+      html += `<tr>
+        <td>${productId || '—'}</td>
+        <td><strong>${p.title || 'Untitled'}</strong></td>
+        <td>${p.storageValue || '—'}</td>
+        <td><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${p.colorValue || '#888'};vertical-align:middle;margin-right:6px;"></span> ${p.colorValue || '—'}</td>
+        <td>${p.qty ?? '—'}</td>
+        <td><span class="text-cyan font-medium">Rs. ${p.price || '0.00'}</span></td>
+        <td>${p.categoryName || '—'}</td>
+        <td><span class="admin-status ${statusClass}">${statusLabel}</span></td>
+        <td>
+          <button class="action-icon !w-8 !h-8" onclick="openEditModal(${productId})" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="action-icon !w-8 !h-8" onclick="toggleProductStatus(${productId}, '${isActive ? 'INACTIVE' : 'ACTIVE'}')" title="${isActive ? 'Deactivate' : 'Activate'}">
+            <i class="fas ${isActive ? 'fa-pause' : 'fa-play'}"></i>
+          </button>
+          <button class="action-icon !w-8 !h-8" onclick="deleteProduct(${productId})" title="Delete"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`;
+    });
+    body.innerHTML = html;
+  }
+
+  // FIXED: toggleProductStatus - properly calls the API with the correct endpoint
+  async function toggleProductStatus(productId, newStatus) {
+    const action = newStatus === 'ACTIVE' ? 'activate' : 'deactivate';
+    const confirmMsg = `Are you sure you want to ${action} this product?`;
+
+    Notiflix.Confirm.show(
+            'Confirm Status Change',
+            confirmMsg,
+            'Yes, proceed',
+            'Cancel',
+            async () => {
+              try {
+                Notiflix.Loading.pulse(`Updating status...`);
+
+                // CORRECT API CALL - matches ProductController.java
+                const resp = await fetch(`api/products/${productId}/status`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    status: newStatus
+                  })
+                });
+
+                if (!resp.ok) {
+                  throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
+                }
+
+                const data = await resp.json();
+
+                if (data.status) {
+                  Notiflix.Notify.success(`Product ${action}d successfully!`);
+                  // Refresh the product list
+                  await LoadProducts();
+                } else {
+                  Notiflix.Notify.failure(data.message || `Failed to ${action} product`);
+                }
+              } catch (e) {
+                console.error('Status update error:', e);
+                Notiflix.Notify.failure(e.message || 'Status update failed');
+              } finally {
+                Notiflix.Loading.remove();
+              }
+            }
+    );
+  }
+
+  async function deleteProduct(productId) {
+    Notiflix.Confirm.show('Delete Product', 'This cannot be undone.', 'Yes', 'Cancel', async () => {
+      try {
+        Notiflix.Loading.pulse('Deleting...');
+        const resp = await fetch(`api/products/${productId}`, { method: 'DELETE' });
+        if (!resp.ok) throw new Error('Delete failed');
+        const data = await resp.json();
+        if (data.status) {
+          Notiflix.Notify.success('Deleted!');
+          LoadProducts();
+        } else {
+          Notiflix.Notify.failure(data.message || 'Delete failed');
+        }
+      } catch (e) {
+        Notiflix.Notify.failure(e.message);
+      }
+      finally { Notiflix.Loading.remove(); }
+    });
+  }
+
+  // ============================================================
+  //  EDIT PRODUCT - FIXED STATUS UPDATE
+  // ============================================================
+  function openEditModal(productId) {
+    const product = allProducts.find(p => (p.productId || p.id) === productId);
+    if (!product) { Notiflix.Notify.failure('Product not found'); return; }
+    document.getElementById('editProductId').value = productId;
+    document.getElementById('editTitle').value = product.title || '';
+    document.getElementById('editDescription').value = product.description || '';
+    document.getElementById('editQty').value = product.qty || 0;
+    document.getElementById('editPrice').value = product.price || 0;
+    setSelectValue('editCategory', product.categoryId || 0);
+    setSelectValue('editColor', product.colorId || 0);
+    setSelectValue('editStorage', product.storageId || 0);
+    const status = product.status || 'ACTIVE';
+    document.getElementById('editStatus').value = (status === 'ACTIVE' || status === 'active') ? 'ACTIVE' : 'INACTIVE';
+    document.getElementById('editModal').style.display = 'flex';
+  }
+
+  function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+
+  async function saveEditProduct() {
+    const productId = parseInt(document.getElementById('editProductId').value);
+    if (!productId) { Notiflix.Notify.warning('No product selected'); return; }
+    const payload = {
+      title: document.getElementById('editTitle').value.trim(),
+      description: document.getElementById('editDescription').value.trim(),
+      categoryId: parseInt(document.getElementById('editCategory').value) || 0,
+      colorId: parseInt(document.getElementById('editColor').value) || 0,
+      storageId: parseInt(document.getElementById('editStorage').value) || 0,
+      qty: parseInt(document.getElementById('editQty').value) || 0,
+      price: parseFloat(document.getElementById('editPrice').value) || 0,
+      status: document.getElementById('editStatus').value || 'ACTIVE'
+    };
+    if (!payload.title || !payload.description || payload.categoryId <= 0 || payload.colorId <= 0 || payload.storageId <= 0 || payload.price <= 0) {
+      Notiflix.Notify.warning('Please fill all fields correctly');
+      return;
+    }
+    try {
+      Notiflix.Loading.pulse('Updating...');
+      const resp = await fetch(`api/products/${productId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!resp.ok) throw new Error('Update failed');
+      const data = await resp.json();
+      if (data.status) {
+        Notiflix.Notify.success('Updated!');
+        closeEditModal();
+        LoadProducts();
+      } else {
+        Notiflix.Notify.failure(data.message || 'Update failed');
+      }
+    } catch (e) {
+      Notiflix.Notify.failure(e.message);
+    }
+    finally { Notiflix.Loading.remove(); }
+  }
+
+  // ============================================================
+  //  ADD PRODUCT
+  // ============================================================
+  async function addProduct() {
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const categoryId = parseInt(document.getElementById('category').value) || 0;
+    const colorId = parseInt(document.getElementById('color').value) || 0;
+    const storageId = parseInt(document.getElementById('storage').value) || 0;
+    const qty = parseInt(document.getElementById('qty').value) || 0;
+    const price = parseFloat(document.getElementById('price').value) || 0;
+
+    if (!title || !description || categoryId <= 0 || colorId <= 0 || storageId <= 0 || price <= 0) {
+      Notiflix.Notify.warning('Please fill all fields correctly');
+      return;
+    }
+
+    const productData = { categoryId, title, description, storageId, colorId, price, qty };
+    const formData = new FormData();
+    formData.append('product', JSON.stringify(productData));
+
+    try {
+      Notiflix.Loading.pulse('Saving...');
+      const resp = await fetch('api/products/save-product', { method: 'POST', body: formData });
+      if (!resp.ok) throw new Error('Save failed');
+      const data = await resp.json();
+      if (data.status) {
+        const productId = data.productId;
+        // upload images
+        const imgFormData = new FormData();
+        ['img1','img2','img3'].forEach(id => {
+          const inp = document.getElementById(id);
+          if (inp.files && inp.files.length > 0 && inp.files[0]) imgFormData.append('images[]', inp.files[0]);
+        });
+        if (imgFormData.getAll('images[]').length) {
+          await fetch(`api/products/${productId}/upload-images`, { method: 'PUT', body: imgFormData });
+        }
+        Notiflix.Report.success('Success!', 'Product added.', 'Okay', () => {
+          resetAddProductForm();
+          LoadProducts();
+          switchTab('panel-products');
+        });
+      } else {
+        Notiflix.Notify.failure(data.message || 'Save failed');
+      }
+    } catch (e) {
+      Notiflix.Notify.failure(e.message);
+    }
+    finally { Notiflix.Loading.remove(); }
+  }
+
+  function resetAddProductForm() {
+    ['title','description','qty','price'].forEach(id => document.getElementById(id).value = '');
+    ['category','color','storage'].forEach(id => document.getElementById(id).value = '0');
+    ['img1','img2','img3'].forEach(id => {
+      document.getElementById(id).value = '';
+      const preview = document.getElementById(id).parentElement.querySelector('.image-preview');
+      if (preview) { preview.src = ''; preview.style.display = 'none'; }
+    });
+  }
+
+  // ============================================================
+  //  ORDERS
+  // ============================================================
+  async function LoadOrders() {
+    const body = document.getElementById('orderTableBody');
+    body.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2rem; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>`;
+    try {
+      const resp = await fetch('api/orders/list');
+      if (!resp.ok) throw new Error('Failed to load orders');
+      const data = await resp.json();
+      allOrders = data.orders || [];
+      renderOrders('all');
+    } catch (e) {
+      body.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#ef4444; padding:2rem;">${e.message}</td></tr>`;
+      Notiflix.Notify.failure(e.message);
+    }
+  }
+
+  function renderOrders(filter) {
+    const body = document.getElementById('orderTableBody');
+    let filtered = allOrders;
+    const searchVal = document.getElementById('orderSearch')?.value?.toLowerCase() || '';
+    if (searchVal) filtered = filtered.filter(o => (o.customerName || '').toLowerCase().includes(searchVal));
+    if (!filtered.length) {
+      body.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2rem; color:#94a3b8;">No orders found.</td></tr>`;
+      return;
+    }
+    let html = '';
+    filtered.forEach(o => {
+      const statusClass = ['DELIVERED','COMPLETED','APPROVED'].includes(o.status) ? 'active' : 'inactive';
+      html += `<tr>
+        <td>#${o.orderId}</td>
+        <td>${o.customerName || 'Guest'}<br><small class="text-gray-400">${o.customerEmail || ''}</small></td>
+        <td>${o.itemCount}</td>
+        <td><span class="text-cyan font-medium">Rs. ${o.totalAmount?.toFixed(2) || '0.00'}</span></td>
+        <td><span class="admin-status ${statusClass}">${o.status}</span></td>
+        <td>${o.createdAt || '—'}</td>
+        <td><button class="action-icon !w-8 !h-8" onclick="openOrderModal(${o.orderId})"><i class="fas fa-eye"></i></button></td>
+      </tr>`;
+    });
+    body.innerHTML = html;
+  }
+
+  async function openOrderModal(orderId) {
+    try {
+      Notiflix.Loading.pulse('Loading...');
+      const resp = await fetch(`api/orders/${orderId}`);
+      if (!resp.ok) throw new Error('Order not found');
+      const data = await resp.json();
+      if (!data.status) { Notiflix.Notify.failure(data.message || 'Not found'); return; }
+      const order = data.order;
+      editingOrderId = order.orderId;
+      let itemsHtml = '';
+      (order.items || []).forEach(item => {
+        itemsHtml += `<div class="flex gap-3 items-center border-b border-gray-100 py-2">
+          <img src="${item.image || 'https://picsum.photos/seed/order/40/40'}" class="w-10 h-10 rounded-lg object-cover" />
+          <div><strong>${item.title}</strong><br><small class="text-gray-400">${item.colorValue} / ${item.storageValue} · Qty: ${item.qty}</small></div>
+          <span class="ml-auto text-cyan font-medium">Rs. ${(item.price * item.qty).toFixed(2)}</span>
+        </div>`;
+      });
+      document.getElementById('orderModalBody').innerHTML = `
+        <p><strong>Order #${order.orderId}</strong></p>
+        <p>${order.customerName} (${order.customerEmail})</p>
+        <p class="text-gray-400 text-sm">${order.createdAt}</p>
+        <div class="mt-3">${itemsHtml}</div>
+        <p class="mt-3 text-right font-semibold text-indigo">Total: Rs. ${order.totalAmount?.toFixed(2) || '0.00'}</p>
+      `;
+      document.getElementById('orderStatusSelect').value = order.status;
+      document.getElementById('orderModal').style.display = 'flex';
+    } catch (e) {
+      Notiflix.Notify.failure(e.message);
+    }
+    finally { Notiflix.Loading.remove(); }
+  }
+
+  function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; editingOrderId = null; }
+
+  async function applyOrderStatus() {
+    if (!editingOrderId) return;
+    const newStatus = document.getElementById('orderStatusSelect').value;
+    try {
+      Notiflix.Loading.pulse('Updating...');
+      const resp = await fetch(`api/orders/${editingOrderId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (!resp.ok) throw new Error('Update failed');
+      const data = await resp.json();
+      if (data.status) {
+        Notiflix.Notify.success('Order status updated!');
+        closeOrderModal();
+        LoadOrders();
+      } else {
+        Notiflix.Notify.failure(data.message || 'Update failed');
+      }
+    } catch (e) {
+      Notiflix.Notify.failure(e.message);
+    }
+    finally { Notiflix.Loading.remove(); }
+  }
+
+  // ============================================================
+  //  TAB SWITCHING
+  // ============================================================
+  function switchTab(tabId) {
+    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(tabId)?.classList.add('active');
+    document.querySelectorAll('.admin-nav-item[data-tab]').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.admin-nav-item[data-tab="${tabId}"]`)?.classList.add('active');
+    const titles = {
+      'panel-overview':'Overview',
+      'panel-products':'View Products',
+      'panel-add':'Add Product',
+      'panel-orders':'Order Manage',
+      'panel-customers':'User Manage'
+    };
+    document.getElementById('pageTitle').textContent = titles[tabId] || 'Overview';
+    document.getElementById('adminSidebar')?.classList.remove('open');
+  }
+
+  document.querySelectorAll('.admin-nav-item[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // search listeners
+  document.getElementById('productSearch')?.addEventListener('input', () => renderProducts('all'));
+  document.getElementById('orderSearch')?.addEventListener('input', () => renderOrders('all'));
+
+  // ============================================================
+  //  INIT
+  // ============================================================
+  window.addEventListener('load', async () => {
+    await loadColorStorage();
+    await LoadProducts();
+    await LoadOrders();
+    // close modals on outside click
+    document.getElementById('editModal')?.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeEditModal();
+    });
+    document.getElementById('orderModal')?.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeOrderModal();
+    });
+  });
+
+  // image preview for add form
+  ['img1','img2','img3'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', function() {
+      const file = this.files && this.files[0];
+      const preview = this.parentElement.querySelector('.image-preview');
+      if (!preview) return;
+      if (!file) {
+        preview.style.display = 'none';
+        preview.src = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+</script>
+</body>
+</html>

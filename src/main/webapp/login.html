@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — ZyroTech</title>
+<link rel="icon" href="assets/img/logo.jpeg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          indigo: { DEFAULT: '#121F47', 50: '#EEF1F8' },
+          cyan: { DEFAULT: '#00BFB3', light: '#17D6C9', soft: '#E3FBF9' }
+        },
+        fontFamily: {
+          display: ['Space Grotesk', 'sans-serif'],
+          sans: ['Inter', 'sans-serif']
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="min-h-screen">
+
+<div class="min-h-screen grid lg:grid-cols-2">
+
+  <div class="hero-bolt-bg relative hidden lg:flex flex-col justify-between p-12 text-white overflow-hidden">
+    <a href="index.html" class="flex items-center gap-2 relative z-10">
+      <img src="assets/img/logo.jpeg" alt="ZyroTech" class="h-10 w-10 rounded-lg object-cover">
+      <span class="font-display font-bold text-xl">Zyro<span style="color:var(--cyan);">Tech</span></span>
+    </a>
+    <div class="relative z-10 max-w-sm">
+      <h2 class="font-display font-bold text-3xl leading-tight">Welcome back to the charge.</h2>
+      <p class="mt-4 text-sm" style="color:#B7C2DE;">Sign in to track orders, manage your watchlist, and check out faster.</p>
+    </div>
+    <p class="relative z-10 text-xs" style="color:#7A87AC;">&copy; 2026 ZyroTech</p>
+    <div class="absolute -bottom-16 -right-16 w-72 h-72 rounded-full" style="background: radial-gradient(circle, rgba(0,191,179,0.25), transparent 70%);"></div>
+  </div>
+
+  <div class="flex items-center justify-center p-6 sm:p-12">
+    <div class="w-full max-w-sm">
+      <a href="index.html" class="flex lg:hidden items-center gap-2 mb-10 justify-center">
+        <img src="assets/img/logo.jpeg" alt="ZyroTech" class="h-9 w-9 rounded-lg object-cover">
+        <span class="font-display font-bold text-lg" style="color:var(--indigo);">Zyro<span style="color:var(--cyan);">Tech</span></span>
+      </a>
+
+      <h1 class="font-display font-bold text-2xl" style="color:var(--indigo);">Sign in</h1>
+      <p class="text-sm text-gray-400 mt-1">Enter your details to access your account.</p>
+
+      <form class="mt-8 space-y-5" onsubmit="event.preventDefault(); login();">
+        <div>
+          <label class="zt-label">Email Address</label>
+          <input type="email" id="logEmail" required class="zt-input" placeholder="you@example.com">
+        </div>
+        <div>
+          <div class="flex items-center justify-between">
+            <label class="zt-label">Password</label>
+            <a href="#" class="text-xs text-red-primary font-medium">Forgot password?</a>
+          </div>
+          <input type="password" id="logPassword" required class="zt-input" placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn-primary w-full"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
+      </form>
+
+      <p class="text-sm text-gray-400 text-center mt-8">
+        Don't have an account? <a href="register.html" class="text-red-primary font-semibold">Create one</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/notiflix@3.2.6/dist/notiflix-3.2.6.min.js"></script>
+<script src="assets/js/login.js"></script>
+</body>
+</html>
